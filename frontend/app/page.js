@@ -3,25 +3,41 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [name, setName] = useState("");
   const router = useRouter();
+  const [step, setStep] = useState("home");
+  const [name, setName] = useState("");
 
-  const createRoom = () => {
+  const createRoom = (type) => {
     const id = Math.random().toString(36).slice(2, 8);
-    router.push(`/room/${id}?name=${name}`);
+    router.push(`/room/${id}?name=${name}&type=${type}`);
   };
 
   return (
-    <main className="h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl mb-4">FriendsWorld 🎬</h1>
-      <input
-        className="p-2 text-black mb-3"
-        placeholder="Your nickname"
-        onChange={e => setName(e.target.value)}
-      />
-      <button className="bg-red-600 px-6 py-2 rounded" onClick={createRoom}>
-        Create Room
-      </button>
+    <main className="home">
+      <h1>FriendsWorld 🎬</h1>
+
+      {step === "home" && (
+        <>
+          <input
+            placeholder="Your nickname"
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button onClick={() => setStep("choose")}>
+            Make a Room
+          </button>
+        </>
+      )}
+
+      {step === "choose" && (
+        <div className="room-options">
+          <button className="couple" onClick={() => createRoom("couple")}>
+            💖 Couple Room
+          </button>
+          <button className="friends" onClick={() => createRoom("friends")}>
+            👥 Friends Room
+          </button>
+        </div>
+      )}
     </main>
   );
 }

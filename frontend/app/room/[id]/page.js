@@ -1,71 +1,55 @@
 "use client";
-import { useEffect, useState } from "react";
-import socket from "@/lib/socket";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 import YouTubePlayer from "@/components/YouTubePlayer";
 import DriveVideoPlayer from "@/components/DriveVideoPlayer";
 import ScreenShare from "@/components/ScreenShare";
 import VoiceChat from "@/components/VoiceChat";
 import ChatBox from "@/components/ChatBox";
-import FloatingMessages from "@/components/FloatingMessages";
-import PauseMusic from "@/components/PauseMusic";
 
 export default function Room({ params }) {
   const search = useSearchParams();
   const name = search.get("name");
+  const type = search.get("type"); // couple | friends
 
-  const [paused, setPaused] = useState(false);
-  const [isHost, setIsHost] = useState(false);
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Invite link copied ❤️");
+  };
 
   useEffect(() => {
-    socket.emit("join-room", {
-      roomId: params.id,
-      nickname: name
-    });
-
-    socket.on("resume-state", (state) => {
-      console.log("Resumed state:", state);
-    });
-
-    socket.on("host-changed", (hostId) => {
-      setIsHost(socket.id === hostId);
-    });
-
-    socket.on("auto-pause", () => setPaused(true));
-    socket.on("room-full", () =>
-      alert("This is a couple-only room ❤️")
-    );
-  }, []);
+    document.body.className =
+      type === "couple" ? "couple-room" : "friends-room";
+  }, [type]);
 
   return (
-    <div className="p-4">
-      {/* Romantic Header */}
-      <div className="text-center mb-4">
-        <h1 className="text-2xl font-semibold">💖 Movie Date Mode 💖</h1>
-        <p className="text-pink-300 text-sm">
-          Just you & your favorite person
-        </p>
+    <div className="room-page">
+      {/* Top Bar */}
+      <div className="top-bar">
+        <span>
+          {type === "couple" ? "💖 Couple Room" : "👥 Friends Room"}
+        </span>
+        <button onClick={copyLink}>🔗 Share Link</button>
       </div>
 
-      <div className="relative mb-4">
-        <YouTubePlayer roomId={params.id} isHost={isHost} />
-        <FloatingMessages />
-      </div>
+      {/* Video Area */}
+      <YouTubePlayer roomId={params.id} isHost />
 
       <DriveVideoPlayer
         roomId={params.id}
-        isHost={isHost}
+        isHost
         src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
       />
 
-      <div className="my-4">
+      {/* Controls */}
+      <div className="controls">
         <ScreenShare />
         <VoiceChat />
       </div>
 
+      {/* Chat */}
       <ChatBox nickname={name} />
-      <PauseMusic paused={paused} />
     </div>
   );
 }
