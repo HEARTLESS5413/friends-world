@@ -1,0 +1,25 @@
+body {
+  background: radial-gradient(circle at top, #200018, #000);
+  color: #ffeef5;
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+video {
+  max-width: 100%;
+  border-radius: 14px;
+}
+
+button {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  color: white;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 15px rgba(255, 70, 120, 0.6);
+}
